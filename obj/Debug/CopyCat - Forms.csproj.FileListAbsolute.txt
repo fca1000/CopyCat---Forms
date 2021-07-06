@@ -8,3 +8,13 @@ D:\Empresa\Clientes\CopyCat - Forms\obj\Debug\CopyCat - Forms.csproj.GenerateRes
 D:\Empresa\Clientes\CopyCat - Forms\obj\Debug\CopyCat - Forms.csproj.CoreCompileInputs.cache
 D:\Empresa\Clientes\CopyCat - Forms\obj\Debug\CopyCat - Forms.exe
 D:\Empresa\Clientes\CopyCat - Forms\obj\Debug\CopyCat - Forms.pdb
+D:\Dev\GDC\VS\CopyCat---Forms\bin\Debug\CopyCat - Forms.exe.config
+D:\Dev\GDC\VS\CopyCat---Forms\bin\Debug\CopyCat - Forms.exe
+D:\Dev\GDC\VS\CopyCat---Forms\bin\Debug\CopyCat - Forms.pdb
+D:\Dev\GDC\VS\CopyCat---Forms\obj\Debug\CopyCat - Forms.csprojAssemblyReference.cache
+D:\Dev\GDC\VS\CopyCat---Forms\obj\Debug\CopyCat___Forms.Frm_Principal.resources
+D:\Dev\GDC\VS\CopyCat---Forms\obj\Debug\CopyCat___Forms.Properties.Resources.resources
+D:\Dev\GDC\VS\CopyCat---Forms\obj\Debug\CopyCat - Forms.csproj.GenerateResource.cache
+D:\Dev\GDC\VS\CopyCat---Forms\obj\Debug\CopyCat - Forms.csproj.CoreCompileInputs.cache
+D:\Dev\GDC\VS\CopyCat---Forms\obj\Debug\CopyCat - Forms.exe
+D:\Dev\GDC\VS\CopyCat---Forms\obj\Debug\CopyCat - Forms.pdb
