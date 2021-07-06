@@ -1,0 +1,10 @@
+D:\Empresa\Clientes\CopyCat - Forms\bin\Debug\CopyCat - Forms.exe.config
+D:\Empresa\Clientes\CopyCat - Forms\bin\Debug\CopyCat - Forms.exe
+D:\Empresa\Clientes\CopyCat - Forms\bin\Debug\CopyCat - Forms.pdb
+D:\Empresa\Clientes\CopyCat - Forms\obj\Debug\CopyCat - Forms.csprojAssemblyReference.cache
+D:\Empresa\Clientes\CopyCat - Forms\obj\Debug\CopyCat___Forms.Frm_Principal.resources
+D:\Empresa\Clientes\CopyCat - Forms\obj\Debug\CopyCat___Forms.Properties.Resources.resources
+D:\Empresa\Clientes\CopyCat - Forms\obj\Debug\CopyCat - Forms.csproj.GenerateResource.cache
+D:\Empresa\Clientes\CopyCat - Forms\obj\Debug\CopyCat - Forms.csproj.CoreCompileInputs.cache
+D:\Empresa\Clientes\CopyCat - Forms\obj\Debug\CopyCat - Forms.exe
+D:\Empresa\Clientes\CopyCat - Forms\obj\Debug\CopyCat - Forms.pdb
