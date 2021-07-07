@@ -47,7 +47,6 @@ namespace CopyCat___Forms
                 AtualizaProgressBar();
             }
         }
-
         public List<string> CarregaArquivosReturn(string diretorio)
         {
             string name = "";
@@ -128,23 +127,32 @@ namespace CopyCat___Forms
 
         private void button1_Click(object sender, EventArgs e)
         {
-            FolderBrowserDialog Fbd = new FolderBrowserDialog
+            if (!string.IsNullOrEmpty(Settings.Default.FolderPath))
             {
-                Description = "Selecione o Caminho das imagens em PDF"
-            };
-            try
-            {
-                if (Fbd.ShowDialog() == DialogResult.OK)
+                FolderBrowserDialog Fbd = new FolderBrowserDialog
                 {
-                    FolderPath = Fbd.SelectedPath.ToString();
+                    Description = "Selecione o Caminho das imagens em PDF"
+                };
+                try
+                {
+                    if (Fbd.ShowDialog() == DialogResult.OK)
+                    {
+                        FolderPath = Fbd.SelectedPath.ToString();
+                    }
+                    CarregaDadosPasta(FolderPath);
                 }
-                CarregaDadosPasta(FolderPath);
+                catch (SecurityException Ex)
+                {
+                    MessageBox.Show($"Security error.\n\nError message: {Ex.Message}\n\n" +
+                    $"Details:\n\n{Ex.StackTrace}");
+                }
             }
-            catch (SecurityException Ex)
+            else 
             {
-                MessageBox.Show($"Security error.\n\nError message: {Ex.Message}\n\n" +
-                $"Details:\n\n{Ex.StackTrace}");
-            }
+                MessageBox.Show("Sem arquivo");
+                Settings.Default.FolderPath = @"D:\Empresa\Clientes\CopyCat - Forms\Imagens_teste\";
+                Settings.Default.Save();
+            }                           
         }
 
         public Image image2 { get; set; }
@@ -205,7 +213,13 @@ namespace CopyCat___Forms
             try
             {
                 var dir = new DirectoryInfo(FilePath);
-                string destino = @"C:\CARREFOUR\" + dir.Name.ToString();
+
+                if (!Directory.Exists(@"C:\CARRCARREFOUR_PENDENCIASEFOUR\"))
+                {
+                    Directory.CreateDirectory(@"C:\CARREFOUR_PENDENCIAS\");
+                }
+
+                string destino = @"C:\CARREFOUR_PENDENCIAS\" + dir.Name.ToString();
                 image2.Dispose();
                 Directory.Move(FilePath, destino);
                 CarregaDadosPasta(FolderPath);
