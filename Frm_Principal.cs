@@ -131,7 +131,8 @@ namespace CopyCat___Forms
             {
                 FolderBrowserDialog Fbd = new FolderBrowserDialog
                 {
-                    Description = "Selecione o Caminho das imagens em PDF"
+                    Description = "Selecione o Caminho das imagens em PDF",
+                    SelectedPath = @"D:\RhMed_Faltantes"
                 };
                 try
                 {
@@ -178,10 +179,23 @@ namespace CopyCat___Forms
                     saveLastItem = tvDados.SelectedNode.Text.ToString();
                     ver = true;
                 }
+                string path2 = @"D:\CARREFOUR_PENDENCIAS\Log.txt";
+                if (!File.Exists(path2))
+                {
+                    File.Create(path2);
+                }
+                StreamWriter sw = File.CreateText(path2);
+                sw.WriteLine(path);
+                sw.Close();
+
             }
             catch (Exception)
             {
                 MessageBox.Show("Não é possivel visualizar a pasta raiz!");
+            }
+            finally
+            {
+                label1.Text = "";
             }
             
             if (ver)
@@ -212,17 +226,42 @@ namespace CopyCat___Forms
         {
             try
             {
-                var dir = new DirectoryInfo(FilePath);
+                DirectoryInfo dir = new DirectoryInfo(FilePath);              
 
-                if (!Directory.Exists(@"C:\CARRCARREFOUR_PENDENCIASEFOUR\"))
+                if (!Directory.Exists(@"D:\CARREFOUR_PENDENCIAS\"))
                 {
-                    Directory.CreateDirectory(@"C:\CARREFOUR_PENDENCIAS\");
+                    Directory.CreateDirectory(@"D:\CARREFOUR_PENDENCIAS\");
                 }
+                if (!dir.Exists)
+                {
+                    throw new DirectoryNotFoundException(
+                        "Source directory does not exist or could not be found: "
+                        + FilePath);
+                }
+                DirectoryInfo[] dirs = dir.GetDirectories();
+                Directory.CreateDirectory(@"D:\CARREFOUR_PENDENCIAS\" + dir.Name.ToString());
+                                
+                
+                    FileInfo[] files = dir.GetFiles();
 
-                string destino = @"C:\CARREFOUR_PENDENCIAS\" + dir.Name.ToString();
-                image2.Dispose();
-                Directory.Move(FilePath, destino);
-                CarregaDadosPasta(FolderPath);
+                foreach (FileInfo file in files)
+                {
+                    string tempPath = Path.Combine(@"D:\CARREFOUR_PENDENCIAS\" + dir.Name.ToString() + @"\", file.Name);
+                    file.CopyTo(tempPath, false);
+                }
+               
+                label1.Text = "Copiado";
+
+
+
+
+
+
+                //string destino = @"D:\CARREFOUR_PENDENCIAS\" + dir.Name.ToString();
+                //image2.Dispose();
+                //IMGLoader.Image = null;
+                //Directory.Move(FilePath, destino);                
+                //CarregaDadosPasta(FolderPath);
             }
             catch (Exception Ex) 
             {
