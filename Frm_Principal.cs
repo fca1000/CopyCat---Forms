@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Security;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -23,12 +24,11 @@ namespace CopyCat___Forms
         public void CarregaDadosPasta(string diretorio)
         {
             DirectoryInfo diretorioInfo = new DirectoryInfo(diretorio);
-            //Define o valor máximo do ProgressBar
             pgbar1.Maximum = Directory.GetFiles(diretorio, ".", SearchOption.AllDirectories).Length + Directory.GetDirectories(diretorio, "**", SearchOption.AllDirectories).Length;
+            tvDados.Nodes.Clear();
             TreeNode tds = tvDados.Nodes.Add(diretorioInfo.Name);
             tds.Tag = diretorioInfo.FullName;
             tds.StateImageIndex = 0;
-            //carrega os arquivos e as subpastas
             CarregaArquivos(diretorio, tds);
             CarregaSubDiretorios(diretorio, tds);
         }
@@ -53,11 +53,9 @@ namespace CopyCat___Forms
             string local = "";
             try
             {
-
                 if (Directory.Exists(diretorio))
                 {
-                    string[] arquivos = Directory.GetFiles(diretorio, ".");
-                    // Percorre os arquivos              
+                    string[] arquivos = Directory.GetFiles(diretorio, ".");  
                     foreach (string arq in arquivos)
                     {
                         FileInfo arquivo = new FileInfo(arq);
@@ -76,9 +74,7 @@ namespace CopyCat___Forms
 
         public void CarregaSubDiretorios(string dir, TreeNode td)
         {
-            // Pega todos os subdiretorios
             string[] subdiretorioEntradas = Directory.GetDirectories(dir);
-            // Percorre os subdiretorios a ver se existem outras subpasts
             foreach (string subdiretorio in subdiretorioEntradas)
             {
                 DirectoryInfo diretorio = new DirectoryInfo(subdiretorio);
@@ -92,9 +88,7 @@ namespace CopyCat___Forms
 
         public void CarregaSubDiretorios2(string dir, TreeNode td)
         {
-            // Pega todos os subdiretorios
             string[] subdiretorioEntradas = Directory.GetDirectories(dir);
-            // Percorre os subdiretorios a ver se existem outras subpasts
             foreach (string subdiretorio in subdiretorioEntradas)
             {
                 DirectoryInfo diretorio = new DirectoryInfo(subdiretorio);
@@ -119,18 +113,13 @@ namespace CopyCat___Forms
 
         public void tvDados_MouseMove(object sender, MouseEventArgs e)
         {
-            // Pega o node na posição do ponteiro do mouse
             TreeNode theNode = this.tvDados.GetNodeAt(e.X, e.Y);
-
-            // Define uma ToolTip somente se o ponteiro do mouse estive em um node
             if (theNode != null && theNode.Tag != null)
             {
-                // Altera a ToolTip somente se o ponteiro do mouse se mover para um novo Node
                 if (theNode.Tag.ToString() != this.toolTip1.GetToolTip(this.tvDados))
                     this.toolTip1.SetToolTip(this.tvDados, theNode.Tag.ToString());
-
             }
-            else  // O ponteiro não esta sobre um Node então limpa a ToolTip.  
+            else 
             {
                 this.toolTip1.SetToolTip(this.tvDados, "");
             }
@@ -138,89 +127,90 @@ namespace CopyCat___Forms
 
         private void button1_Click(object sender, EventArgs e)
         {
-            
-            if (!string.IsNullOrEmpty(Settings.Default.FolderPath))
+            FolderBrowserDialog Fbd = new FolderBrowserDialog
             {
-                Settings.Default.FolderPath = @"D:\Empresa\Clientes\CopyCat - Forms\Imagens_teste\Destino";
-                Settings.Default.Save();
-                var Caminhoprincipal = new DirectoryInfo(Settings.Default.FolderPath);
-                FolderBrowserDialog Fbd = new FolderBrowserDialog
+                Description = "Selecione o Caminho das imagens em PDF"
+            };
+            try
+            {
+                if (Fbd.ShowDialog() == DialogResult.OK)
                 {
-                    Description = "Selecione o Caminho das imagens em PDF",
-                    SelectedPath = Caminhoprincipal.Parent.FullName
-                };
-                try
-                {
-                    if (Fbd.ShowDialog() == DialogResult.OK)
-                    {
-                        Settings.Default.FolderPath = Fbd.SelectedPath.ToString();
-                        Settings.Default.Save();
-                    }
-                    CarregaDadosPasta(Settings.Default.FolderPath.ToString());
+                    FolderPath = Fbd.SelectedPath.ToString();
                 }
-                catch (SecurityException Ex)
-                {
-                    MessageBox.Show($"Security error.\n\nError message: {Ex.Message}\n\n" +
-                    $"Details:\n\n{Ex.StackTrace}");
-                }
+                CarregaDadosPasta(FolderPath);
             }
-            else
+            catch (SecurityException Ex)
             {
-                MessageBox.Show("Sem arquivo");
-                Settings.Default.FolderPath = @"D:\Empresa\Clientes\CopyCat - Forms\Imagens_teste\Destino";
-                Settings.Default.Save();
+                MessageBox.Show($"Security error.\n\nError message: {Ex.Message}\n\n" +
+                $"Details:\n\n{Ex.StackTrace}");
             }
         }
 
         public Image image2 { get; set; }
+        public string FolderPath { get; set; }
+        public string FilePath { get; set; }
+
         private void tvDados_KeyDown(object sender, KeyEventArgs e)
         {
-            string path = Settings.Default.FolderPath + @"\" + tvDados.SelectedNode.Text.ToString();
-            List<string> result = CarregaArquivosReturn(path);
-            string image_path = result[0];
-
-            if (Directory.Exists(Settings.Default.FolderPath))
-            {
-                Settings.Default.FolderPath = result[1];
-                Settings.Default.Save();
-            }            
-
+            bool ver = false;
+            string path = "";
             try
             {
-                if (!string.IsNullOrEmpty(image_path))
+                if (e.KeyCode == Keys.Up)
                 {
-                    image2 = Image.FromFile(image_path);
-                    IMGLoader.Image = image2;
-                    IMGLoader.SizeMode = PictureBoxSizeMode.StretchImage;
-                }                              
+                    path = FolderPath + @"\" + tvDados.SelectedNode.PrevNode.Text.ToString();
+                    ver = true;
+                }
+                else if (e.KeyCode == Keys.Down)
+                {
+                    path = FolderPath + @"\" + tvDados.SelectedNode.NextNode.Text.ToString();
+                    ver = true;
+                }
             }
-            catch (Exception Ex)
+            catch (Exception)
             {
-                MessageBox.Show("Error: " + Ex, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-            finally
-            {                
+                MessageBox.Show("Não é possivel visualizar a pasta raiz!");
             }
             
+            if (ver)
+            {
+                List<string> result = CarregaArquivosReturn(path);
+                string image_path = result[0];
+                FilePath = result[1];
+
+                try
+                {
+                    if (!string.IsNullOrEmpty(image_path))
+                    {
+                        image2 = Image.FromFile(image_path);
+                        IMGLoader.Image = image2;
+                        IMGLoader.SizeMode = PictureBoxSizeMode.StretchImage;
+                        IMGLoader.Refresh();
+                        Application.DoEvents();
+                    }
+                }
+                catch (Exception Ex)
+                {
+                    MessageBox.Show("Error: " + Ex, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
         }
+
         public void button1_Click_1(object sender, EventArgs e)
         {
             try
             {
-                var Nomedapasta = new DirectoryInfo(Settings.Default.FolderPath);
-                var caminho = Settings.Default.FolderPath;
-                var destino = @"D:\Empresa\Clientes\CopyCat - Forms\Imagens_teste\Destino\Carrefour\" + Nomedapasta.Name;
-                IMGLoader.Dispose();
+                var dir = new DirectoryInfo(FilePath);
+                string destino = @"C:\CARREFOUR\" + dir.Name.ToString();
                 image2.Dispose();
-                tvDados.Refresh();
-                Directory.Move(Nomedapasta.FullName, destino);
+                Directory.Move(FilePath, destino);
             }
             catch (Exception Ex) 
             {
-
                 MessageBox.Show("Error: " + Ex, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error); 
             }                        
         }
+
         private void button2_Click(object sender, EventArgs e)
         {
 
