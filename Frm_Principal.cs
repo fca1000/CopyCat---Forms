@@ -31,6 +31,7 @@ namespace CopyCat___Forms
             tds.StateImageIndex = 0;
             CarregaArquivos(diretorio, tds);
             CarregaSubDiretorios(diretorio, tds);
+            tds.Expand();
         }
         public void CarregaArquivos(string diretorio, TreeNode tnd)
         {
@@ -149,6 +150,7 @@ namespace CopyCat___Forms
         public Image image2 { get; set; }
         public string FolderPath { get; set; }
         public string FilePath { get; set; }
+        public string saveLastItem { get; set; }
 
         private void tvDados_KeyDown(object sender, KeyEventArgs e)
         {
@@ -159,11 +161,13 @@ namespace CopyCat___Forms
                 if (e.KeyCode == Keys.Up)
                 {
                     path = FolderPath + @"\" + tvDados.SelectedNode.PrevNode.Text.ToString();
+                    saveLastItem = tvDados.SelectedNode.Text.ToString();
                     ver = true;
                 }
                 else if (e.KeyCode == Keys.Down)
                 {
                     path = FolderPath + @"\" + tvDados.SelectedNode.NextNode.Text.ToString();
+                    saveLastItem = tvDados.SelectedNode.Text.ToString();
                     ver = true;
                 }
             }
@@ -204,6 +208,7 @@ namespace CopyCat___Forms
                 string destino = @"C:\CARREFOUR\" + dir.Name.ToString();
                 image2.Dispose();
                 Directory.Move(FilePath, destino);
+                CarregaDadosPasta(FolderPath);
             }
             catch (Exception Ex) 
             {
