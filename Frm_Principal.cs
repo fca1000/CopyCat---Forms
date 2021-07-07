@@ -49,17 +49,23 @@ namespace CopyCat___Forms
 
         public List<string> CarregaArquivosReturn(string diretorio)
         {
-            string[] arquivos = Directory.GetFiles(diretorio, ".");
-
-            // Percorre os arquivos
             string name = "";
             string local = "";
-            foreach (string arq in arquivos)
+            try
             {
-                FileInfo arquivo = new FileInfo(arq);
-                name = arquivo.FullName;
-                local = arquivo.DirectoryName;
-                break;
+                string[] arquivos = Directory.GetFiles(diretorio, ".");
+                // Percorre os arquivos              
+                foreach (string arq in arquivos)
+                {
+                    FileInfo arquivo = new FileInfo(arq);
+                    name = arquivo.FullName;
+                    local = arquivo.DirectoryName;
+                    break;
+                }                
+            }
+            catch (Exception Ex)
+            {
+                MessageBox.Show("Error: " + Ex, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             return new List<string>() { name, local };
         }
@@ -128,9 +134,18 @@ namespace CopyCat___Forms
 
         private void button1_Click(object sender, EventArgs e)
         {
+            
+            if (string.IsNullOrEmpty(Settings.Default.FolderPath))
+            {
+                Settings.Default.FolderPath = @"D:\Empresa\Clientes\CopyCat - Forms\Imagens_teste\Destino";
+                Settings.Default.Save();
+            }
+
+            var Caminhoprincipal = new DirectoryInfo(Settings.Default.FolderPath);
             FolderBrowserDialog Fbd = new FolderBrowserDialog
             {
-                Description = "Selecione o Caminho das imagens em PDF"
+                Description = "Selecione o Caminho das imagens em PDF",
+                SelectedPath = Caminhoprincipal.Parent.FullName
             };
             try
             {
@@ -148,6 +163,7 @@ namespace CopyCat___Forms
             }
         }
 
+        public Image image2 { get; set; }
         private void tvDados_KeyDown(object sender, KeyEventArgs e)
         {
             string path = Settings.Default.FolderPath + @"\" + tvDados.SelectedNode.Text.ToString();
@@ -157,22 +173,44 @@ namespace CopyCat___Forms
             Settings.Default.FolderPath = result[1];
             Settings.Default.Save();
 
-            Image img = Image.FromFile(image_path);
-
-            IMGLoader.Image = img;
-            IMGLoader.SizeMode = PictureBoxSizeMode.StretchImage;
+            try
+            {
+               image2 = Image.FromFile(image_path);                
+               IMGLoader.Image = image2;               
+               IMGLoader.SizeMode = PictureBoxSizeMode.StretchImage;
+               
+            }
+            catch (Exception Ex)
+            {
+                MessageBox.Show("Error: " + Ex, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {                
+            }
+            
         }
-
-        private void button1_Click_1(object sender, EventArgs e)
+        public void button1_Click_1(object sender, EventArgs e)
         {
-            System.IO.Directory.Move(Settings.Default.FolderPath, @"C:\Users\admin\Desktop\CARREFOUR\");
-        }
+            try
+            {
+                var Nomedapasta = new DirectoryInfo(Settings.Default.FolderPath);
+                var caminho = Settings.Default.FolderPath;
+                var destino = @"D:\Empresa\Clientes\CopyCat - Forms\Imagens_teste\Destino\Carrefour\" + Nomedapasta.Name;
+                IMGLoader.Dispose();
+                image2.Dispose();
+                tvDados.Refresh();
+                Directory.Move(Nomedapasta.FullName, destino);
+            }
+            catch (Exception Ex) 
+            {
 
+                MessageBox.Show("Error: " + Ex, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error); 
+            }                        
+        }
         private void button2_Click(object sender, EventArgs e)
         {
 
         }
-
         private void button3_Click(object sender, EventArgs e)
         {
 
