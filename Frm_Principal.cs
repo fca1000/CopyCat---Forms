@@ -53,14 +53,18 @@ namespace CopyCat___Forms
             string local = "";
             try
             {
-                string[] arquivos = Directory.GetFiles(diretorio, ".");
-                // Percorre os arquivos              
-                foreach (string arq in arquivos)
+
+                if (Directory.Exists(diretorio))
                 {
-                    FileInfo arquivo = new FileInfo(arq);
-                    name = arquivo.FullName;
-                    local = arquivo.DirectoryName;
-                    break;
+                    string[] arquivos = Directory.GetFiles(diretorio, ".");
+                    // Percorre os arquivos              
+                    foreach (string arq in arquivos)
+                    {
+                        FileInfo arquivo = new FileInfo(arq);
+                        name = arquivo.FullName;
+                        local = arquivo.DirectoryName;
+                        break;
+                    }
                 }                
             }
             catch (Exception Ex)
@@ -135,31 +139,36 @@ namespace CopyCat___Forms
         private void button1_Click(object sender, EventArgs e)
         {
             
-            if (string.IsNullOrEmpty(Settings.Default.FolderPath))
+            if (!string.IsNullOrEmpty(Settings.Default.FolderPath))
             {
                 Settings.Default.FolderPath = @"D:\Empresa\Clientes\CopyCat - Forms\Imagens_teste\Destino";
                 Settings.Default.Save();
-            }
-
-            var Caminhoprincipal = new DirectoryInfo(Settings.Default.FolderPath);
-            FolderBrowserDialog Fbd = new FolderBrowserDialog
-            {
-                Description = "Selecione o Caminho das imagens em PDF",
-                SelectedPath = Caminhoprincipal.Parent.FullName
-            };
-            try
-            {
-                if (Fbd.ShowDialog() == DialogResult.OK)
+                var Caminhoprincipal = new DirectoryInfo(Settings.Default.FolderPath);
+                FolderBrowserDialog Fbd = new FolderBrowserDialog
                 {
-                    Settings.Default.FolderPath = Fbd.SelectedPath.ToString();
-                    Settings.Default.Save();
+                    Description = "Selecione o Caminho das imagens em PDF",
+                    SelectedPath = Caminhoprincipal.Parent.FullName
+                };
+                try
+                {
+                    if (Fbd.ShowDialog() == DialogResult.OK)
+                    {
+                        Settings.Default.FolderPath = Fbd.SelectedPath.ToString();
+                        Settings.Default.Save();
+                    }
+                    CarregaDadosPasta(Settings.Default.FolderPath.ToString());
                 }
-                CarregaDadosPasta(Settings.Default.FolderPath.ToString());
+                catch (SecurityException Ex)
+                {
+                    MessageBox.Show($"Security error.\n\nError message: {Ex.Message}\n\n" +
+                    $"Details:\n\n{Ex.StackTrace}");
+                }
             }
-            catch (SecurityException Ex)
+            else
             {
-                MessageBox.Show($"Security error.\n\nError message: {Ex.Message}\n\n" +
-                $"Details:\n\n{Ex.StackTrace}");
+                MessageBox.Show("Sem arquivo");
+                Settings.Default.FolderPath = @"D:\Empresa\Clientes\CopyCat - Forms\Imagens_teste\Destino";
+                Settings.Default.Save();
             }
         }
 
@@ -170,15 +179,20 @@ namespace CopyCat___Forms
             List<string> result = CarregaArquivosReturn(path);
             string image_path = result[0];
 
-            Settings.Default.FolderPath = result[1];
-            Settings.Default.Save();
+            if (Directory.Exists(Settings.Default.FolderPath))
+            {
+                Settings.Default.FolderPath = result[1];
+                Settings.Default.Save();
+            }            
 
             try
             {
-               image2 = Image.FromFile(image_path);                
-               IMGLoader.Image = image2;               
-               IMGLoader.SizeMode = PictureBoxSizeMode.StretchImage;
-               
+                if (!string.IsNullOrEmpty(image_path))
+                {
+                    image2 = Image.FromFile(image_path);
+                    IMGLoader.Image = image2;
+                    IMGLoader.SizeMode = PictureBoxSizeMode.StretchImage;
+                }                              
             }
             catch (Exception Ex)
             {
